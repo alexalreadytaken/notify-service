@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    ports:
+      - '${DB_PORT}:5432'
+  notifyer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - '${NOTIFYER_PORT}:2000'
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - SERIVCE_PORT=${NOTIFYER_PORT}
