@@ -13,6 +13,9 @@ stopall:
 logs:
 	docker-compose logs
 
+swag-gen:
+	swag init -g cmd/main.go
+
 include .env
 export
 test:	

@@ -1,0 +1,33 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "title": "Notify service api",
+        "contact": {},
+        "version": "0.1"
+    },
+    "host": "localhost:2000",
+    "basePath": "/api",
+    "paths": {
+        "/test": {
+            "get": {
+                "description": "test description",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "test summary",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

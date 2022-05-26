@@ -1,0 +1,22 @@
+basePath: /api
+host: localhost:2000
+info:
+  contact: {}
+  title: Notify service api
+  version: "0.1"
+paths:
+  /test:
+    get:
+      description: test description
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: test summary
+schemes:
+- http
+swagger: "2.0"

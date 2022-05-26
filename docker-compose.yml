@@ -17,4 +17,3 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
-      - SERIVCE_PORT=${NOTIFYER_PORT}
