@@ -26,25 +26,45 @@ func restClientToDb(c *rest.Client) db.Client {
 	return client
 }
 
-func restMailingToDb(c *rest.Mailing) db.Mailing {
+func restMailingToDb(m *rest.Mailing) db.Mailing {
 	mailing := db.Mailing{
-		StartingTime:  c.StartingTime,
-		Text:          c.Text,
-		SendindFilter: db.SendindFilter(c.SendindFilter),
-		EndingTime:    c.EndingTime,
-		FilterValue:   c.FilterValue,
+		StartingTime:  m.StartingTime,
+		Text:          m.Text,
+		SendindFilter: db.SendindFilter(m.SendindFilter),
+		EndingTime:    m.EndingTime,
+		FilterValue:   m.FilterValue,
 	}
-	mailing.ID = c.ID
+	mailing.ID = m.ID
 	return mailing
 }
 
-func dbMailingToRest(c *db.Mailing) rest.Mailing {
+func dbMailingToRest(m *db.Mailing) rest.Mailing {
 	return rest.Mailing{
-		ID:            c.ID,
-		StartingTime:  c.StartingTime,
-		Text:          c.Text,
-		SendindFilter: string(c.SendindFilter),
-		EndingTime:    c.EndingTime,
-		FilterValue:   c.FilterValue,
+		ID:            m.ID,
+		StartingTime:  m.StartingTime,
+		Text:          m.Text,
+		SendindFilter: string(m.SendindFilter),
+		EndingTime:    m.EndingTime,
+		FilterValue:   m.FilterValue,
 	}
+}
+
+func dbMessageToRest(m *db.Message) rest.Message {
+	return rest.Message{
+		ID:                       m.ID,
+		ClientId:                 *m.ClientId,
+		MailingId:                *m.MailingId,
+		SendingStatus:            string(m.SendingStatus),
+		SendingTime:              m.SendingTime,
+		ConnectionTimeMillis:     m.ConnectionTime.Milliseconds(),
+		ConnectionIdleTimeMillis: m.ConnectionIdleTime.Milliseconds(),
+	}
+}
+
+func dbMessagesToRest(msgs []db.Message) []rest.Message {
+	var restMessages []rest.Message
+	for i := 0; i < len(msgs); i++ {
+		restMessages = append(restMessages, dbMessageToRest(&msgs[i]))
+	}
+	return restMessages
 }

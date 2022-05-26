@@ -225,6 +225,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/mailing/dashboard": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "all mailings dashboard",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.MailingsDashboard"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
         "/mailing/{id}": {
             "delete": {
                 "description": "deletes mailing by id",
@@ -249,6 +280,46 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/rest.Mailing"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/mailing/{id}/statistics": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "detailed mailing statistic",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "mailing id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.MailingStatistics"
                         }
                     },
                     "400": {
@@ -297,6 +368,17 @@ const docTemplate = `{
                 }
             }
         },
+        "rest.CountMessagesByStatus": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "rest.Mailing": {
             "type": "object",
             "required": [
@@ -327,6 +409,71 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.MailingCountsByStatus": {
+            "type": "object",
+            "properties": {
+                "counts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.CountMessagesByStatus"
+                    }
+                },
+                "mailing": {
+                    "$ref": "#/definitions/rest.Mailing"
+                }
+            }
+        },
+        "rest.MailingStatistics": {
+            "type": "object",
+            "properties": {
+                "mailing": {
+                    "$ref": "#/definitions/rest.Mailing"
+                },
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.Message"
+                    }
+                }
+            }
+        },
+        "rest.MailingsDashboard": {
+            "type": "object",
+            "properties": {
+                "dashboard": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.MailingCountsByStatus"
+                    }
+                }
+            }
+        },
+        "rest.Message": {
+            "type": "object",
+            "properties": {
+                "clientId": {
+                    "type": "integer"
+                },
+                "connectionIdleTimeMillis": {
+                    "type": "integer"
+                },
+                "connectionTimeMillis": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mailingId": {
+                    "type": "integer"
+                },
+                "sendingStatus": {
+                    "type": "string"
+                },
+                "sendingTime": {
                     "type": "string"
                 }
             }

@@ -114,10 +114,29 @@ func DeleteMailing(c *controllers.NotifyerController) func(*gin.Context) {
 	return c.DeleteMailing
 }
 
+// Notifyer godoc
+// @Summary all mailings dashboard
+// @Schemes
+// @Accept json
+// @Produce json
+// @Success 200 {object} rest.MailingsDashboard
+// @Failure 400 {object} rest.Result
+// @Failure 500 {object} rest.Result
+// @Router /mailing/dashboard [get]
 func MailingsDashboard(c *controllers.NotifyerController) func(*gin.Context) {
 	return c.MailingsDashboard
 }
 
+// Notifyer godoc
+// @Summary detailed mailing statistic
+// @Schemes
+// @Accept json
+// @Produce json
+// @Success 200 {object} rest.MailingStatistics
+// @Failure 400 {object} rest.Result
+// @Failure 500 {object} rest.Result
+// @Param id path int true "mailing id"
+// @Router /mailing/{id}/statistics [get]
 func MailingStatistics(c *controllers.NotifyerController) func(*gin.Context) {
 	return c.MailingStatistics
 }

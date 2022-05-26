@@ -8,14 +8,14 @@ import (
 
 type Message struct {
 	gorm.Model
-	SendingTime        time.Time
-	ConnectionTime     time.Duration
-	ConnectionIdleTime time.Duration
-	SendingStatus      SendingStatus
+	SendingTime        time.Time     `gorm:"column:sending_time"`
+	ConnectionTime     time.Duration `gorm:"column:connection_time"`
+	ConnectionIdleTime time.Duration `gorm:"column:connection_idle_time"`
+	SendingStatus      SendingStatus `gorm:"column:sending_status"`
 	ClientId           *uint
-	Client             *Client
+	Client             *Client `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	MailingId          *uint
-	Mailing            *Mailing
+	Mailing            *Mailing `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type SendingStatus string

@@ -95,6 +95,12 @@ func (repo *PgNotifyerRepo) NewMailing(mailing dbmodels.Mailing) (id uint, err e
 	return mailing.ID, nil
 }
 
+func (repo *PgNotifyerRepo) GetAllMailings() []dbmodels.Mailing {
+	var mailings []dbmodels.Mailing
+	repo.db.Model(&dbmodels.Mailing{}).Find(&mailings)
+	return mailings
+}
+
 func (repo *PgNotifyerRepo) MailingExists(id uint) (bool, error) {
 	var exists bool
 	err := repo.db.Model(&dbmodels.Mailing{}).
@@ -142,4 +148,30 @@ func (repo *PgNotifyerRepo) NewMessage(message dbmodels.Message) (id uint, err e
 		return 0, fmt.Errorf(msg)
 	}
 	return message.ID, nil
+}
+
+func (repo *PgNotifyerRepo) CountMailingMessagesByStatus(mailingId uint, status dbmodels.SendingStatus) int64 {
+	var count int64
+	err := repo.db.Model(&dbmodels.Message{}).
+		Where("mailing_id = ?", mailingId).
+		Where("sending_status = ?", status).
+		Count(&count).Error
+	if err != nil {
+		log.Println("error while counting messages=", err)
+		return 0
+	}
+	return count
+}
+
+func (repo *PgNotifyerRepo) GetMailingMessages(mailingId uint) ([]dbmodels.Message, error) {
+	var messages []dbmodels.Message
+	err := repo.db.Model(&dbmodels.Message{}).
+		Where("mailing_id = ?", mailingId).
+		Find(&messages).Error
+	if err != nil {
+		msg := "error while getting messages info"
+		log.Println(msg, err)
+		return nil, fmt.Errorf(msg)
+	}
+	return messages, nil
 }

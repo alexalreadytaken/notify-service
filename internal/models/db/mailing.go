@@ -8,11 +8,11 @@ import (
 
 type Mailing struct {
 	gorm.Model
-	StartingTime  time.Time
-	Text          string
-	SendindFilter SendindFilter
-	FilterValue   string
-	EndingTime    time.Time
+	StartingTime  time.Time     `gorm:"column:starting_time"`
+	Text          string        `gorm:"column:text"`
+	SendindFilter SendindFilter `gorm:"column:sending_filter"`
+	FilterValue   string        `gorm:"column:filter_value"`
+	EndingTime    time.Time     `gorm:"column:ending_time"`
 }
 
 type SendindFilter string

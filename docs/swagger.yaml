@@ -21,6 +21,13 @@ definitions:
     - phone_number
     - timezone
     type: object
+  rest.CountMessagesByStatus:
+    properties:
+      count:
+        type: integer
+      status:
+        type: string
+    type: object
   rest.Mailing:
     properties:
       end_time:
@@ -44,6 +51,48 @@ definitions:
     - sending_filter
     - starting_time
     - text
+    type: object
+  rest.MailingCountsByStatus:
+    properties:
+      counts:
+        items:
+          $ref: '#/definitions/rest.CountMessagesByStatus'
+        type: array
+      mailing:
+        $ref: '#/definitions/rest.Mailing'
+    type: object
+  rest.MailingStatistics:
+    properties:
+      mailing:
+        $ref: '#/definitions/rest.Mailing'
+      messages:
+        items:
+          $ref: '#/definitions/rest.Message'
+        type: array
+    type: object
+  rest.MailingsDashboard:
+    properties:
+      dashboard:
+        items:
+          $ref: '#/definitions/rest.MailingCountsByStatus'
+        type: array
+    type: object
+  rest.Message:
+    properties:
+      clientId:
+        type: integer
+      connectionIdleTimeMillis:
+        type: integer
+      connectionTimeMillis:
+        type: integer
+      id:
+        type: integer
+      mailingId:
+        type: integer
+      sendingStatus:
+        type: string
+      sendingTime:
+        type: string
     type: object
   rest.NewClientResponse:
     properties:
@@ -230,6 +279,52 @@ paths:
           schema:
             $ref: '#/definitions/rest.Result'
       summary: delete mailing
+  /mailing/{id}/statistics:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: mailing id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.MailingStatistics'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: detailed mailing statistic
+  /mailing/dashboard:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.MailingsDashboard'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: all mailings dashboard
 schemes:
 - http
 swagger: "2.0"

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gitlab.com/alexalreadytaken/notify-service/internal/models/db"
 	"gitlab.com/alexalreadytaken/notify-service/internal/models/rest"
 	"gitlab.com/alexalreadytaken/notify-service/internal/repos"
 	"gitlab.com/alexalreadytaken/notify-service/internal/services"
@@ -142,13 +143,13 @@ func (c *NotifyerController) UpdateMailing(g *gin.Context) {
 
 func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 	id := g.Param("id")
-	clientId, err := strconv.ParseUint(id, 10, 64)
+	mailingId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "mailing id must be number"})
 		return
 	}
-	exists, err := c.repo.MailingExists(uint(clientId))
+	exists, err := c.repo.MailingExists(uint(mailingId))
 	if err != nil {
 		log.Println("error while getting info about mailing=", err)
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
@@ -160,7 +161,7 @@ func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 			rest.Result{Msg: "mailing not found"})
 		return
 	}
-	mailing, err := c.repo.DeleteMailing(uint(clientId))
+	mailing, err := c.repo.DeleteMailing(uint(mailingId))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
 			rest.Result{Msg: err.Error()})
@@ -169,12 +170,64 @@ func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 	g.JSON(http.StatusOK, dbMailingToRest(mailing))
 }
 
+//kill me
 func (c *NotifyerController) MailingsDashboard(g *gin.Context) {
-
+	mailings := c.repo.GetAllMailings()
+	var dashboard []rest.MailingCountsByStatus
+	for i := 0; i < len(mailings); i++ {
+		mailing := mailings[i]
+		var counts []rest.CountMessagesByStatus
+		rejected := rest.CountMessagesByStatus{
+			Status: "REJECTED",
+			Count:  uint(c.repo.CountMailingMessagesByStatus(mailing.ID, db.REJECTED)),
+		}
+		sent := rest.CountMessagesByStatus{
+			Status: "SENT",
+			Count:  uint(c.repo.CountMailingMessagesByStatus(mailing.ID, db.SENT)),
+		}
+		counts = append(counts, rejected, sent)
+		dashboard = append(dashboard, rest.MailingCountsByStatus{
+			Mailing: dbMailingToRest(&mailing),
+			Counts:  counts,
+		})
+	}
+	g.JSON(http.StatusOK, rest.MailingsDashboard{
+		Dashboard: dashboard,
+	})
 }
 
 func (c *NotifyerController) MailingStatistics(g *gin.Context) {
-
+	id := g.Param("id")
+	malingId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusBadRequest,
+			rest.Result{Msg: "mailing id must be number"})
+		return
+	}
+	exists, err := c.repo.MailingExists(uint(malingId))
+	if err != nil {
+		log.Println("error while getting info about mailing=", err)
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: "can`t get info about mailing"})
+		return
+	}
+	if !exists {
+		g.AbortWithStatusJSON(http.StatusBadRequest,
+			rest.Result{Msg: "mailing not found"})
+		return
+	}
+	mailing := c.repo.FindMailingById(uint(malingId))
+	messages, err := c.repo.GetMailingMessages(uint(malingId))
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
+	resp := rest.MailingStatistics{
+		Mailing:  dbMailingToRest(mailing),
+		Messages: dbMessagesToRest(messages),
+	}
+	g.JSON(http.StatusOK, resp)
 }
 
 func bindClient(g *gin.Context) *rest.Client {
@@ -213,6 +266,11 @@ func bindMailing(g *gin.Context) *rest.Mailing {
 	if err := g.Bind(&mailing); err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "invalid mailing format=" + err.Error()})
+		return nil
+	}
+	if mailing.EndingTime.Before(mailing.StartingTime) {
+		g.AbortWithStatusJSON(http.StatusBadRequest,
+			rest.Result{Msg: "mailing end time smaller starting time"})
 		return nil
 	}
 	return &mailing
