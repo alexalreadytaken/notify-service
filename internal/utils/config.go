@@ -6,18 +6,22 @@ import (
 )
 
 type AppConfig struct {
-	DbUser     string
-	DbPassword string
-	DbHost     string
-	DbPort     string
+	DbUser              string
+	DbPassword          string
+	DbHost              string
+	DbPort              string
+	ExternalSenderToken string
+	ExternalSenderEndpoint   string
 }
 
 func LoadAppConfigFromEnv() *AppConfig {
 	return &AppConfig{
-		DbUser:     loadEnvByKey("DB_USER"),
-		DbPassword: loadEnvByKey("DB_PASS"),
-		DbPort:     loadEnvByKey("DB_PORT"),
-		DbHost:     loadEnvByKey("DB_HOST"),
+		DbUser:              loadEnvByKey("DB_USER"),
+		DbPassword:          loadEnvByKey("DB_PASS"),
+		DbPort:              loadEnvByKey("DB_PORT"),
+		DbHost:              loadEnvByKey("DB_HOST"),
+		ExternalSenderToken: loadEnvByKey("EXTERNAL_SENDER_TOKEN"),
+		ExternalSenderEndpoint:   loadEnvByKey("EXTERNAL_SENDER_ENDPOINT"),
 	}
 }
 

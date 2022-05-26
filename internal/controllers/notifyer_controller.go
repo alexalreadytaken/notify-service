@@ -10,16 +10,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/alexalreadytaken/notify-service/internal/models/rest"
 	"gitlab.com/alexalreadytaken/notify-service/internal/repos"
+	"gitlab.com/alexalreadytaken/notify-service/internal/services"
 	"gitlab.com/alexalreadytaken/notify-service/internal/utils"
 )
 
 type NotifyerController struct {
-	repo *repos.PgNotifyerRepo
+	repo      *repos.PgNotifyerRepo
+	scheduler *services.SchedulerService
 }
 
-func NewNotifyerController(repo *repos.PgNotifyerRepo) *NotifyerController {
+func NewNotifyerController(
+	repo *repos.PgNotifyerRepo,
+	scheduler *services.SchedulerService) *NotifyerController {
 	return &NotifyerController{
-		repo: repo,
+		repo:      repo,
+		scheduler: scheduler,
 	}
 }
 
@@ -99,14 +104,14 @@ func (c *NotifyerController) NewMailing(g *gin.Context) {
 	if g.IsAborted() {
 		return
 	}
-	id, err := c.repo.NewMailing(restMailingToDb(mailing))
+	mailingId, err := c.repo.NewMailing(restMailingToDb(mailing))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
 			rest.Result{Msg: err.Error()})
 		return
 	}
-	g.JSON(http.StatusOK, rest.NewMailingResponse{ID: id})
-
+	c.scheduler.ScheduleOrSend(mailingId)
+	g.JSON(http.StatusOK, rest.NewMailingResponse{ID: mailingId})
 }
 
 func (c *NotifyerController) UpdateMailing(g *gin.Context) {
@@ -133,7 +138,6 @@ func (c *NotifyerController) UpdateMailing(g *gin.Context) {
 		return
 	}
 	g.JSON(http.StatusOK, rest.Result{Msg: "ok"})
-
 }
 
 func (c *NotifyerController) DeleteMailing(g *gin.Context) {
@@ -173,10 +177,6 @@ func (c *NotifyerController) MailingStatistics(g *gin.Context) {
 
 }
 
-func (c *NotifyerController) NewMailingMessage(g *gin.Context) {
-
-}
-
 func bindClient(g *gin.Context) *rest.Client {
 	client := rest.Client{}
 	if err := g.Bind(&client); err != nil {
@@ -213,11 +213,6 @@ func bindMailing(g *gin.Context) *rest.Mailing {
 	if err := g.Bind(&mailing); err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "invalid mailing format=" + err.Error()})
-		return nil
-	}
-	if mailing.EndingTime.Before(time.Now()) {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "end time of mailing in the past"})
 		return nil
 	}
 	return &mailing

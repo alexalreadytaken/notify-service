@@ -22,6 +22,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
+      - EXTERNAL_SENDER_TOKEN=${EXTERNAL_SENDER_TOKEN}
+      - EXTERNAL_SENDER_ENDPOINT=${EXTERNAL_SENDER_ENDPOINT}
       - DB_HOST=db
     networks:
       - backend

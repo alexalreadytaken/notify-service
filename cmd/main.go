@@ -10,6 +10,7 @@ import (
 	"gitlab.com/alexalreadytaken/notify-service/internal/controllers"
 	"gitlab.com/alexalreadytaken/notify-service/internal/repos"
 	"gitlab.com/alexalreadytaken/notify-service/internal/routes"
+	"gitlab.com/alexalreadytaken/notify-service/internal/services"
 	"gitlab.com/alexalreadytaken/notify-service/internal/utils"
 )
 
@@ -21,11 +22,16 @@ import (
 // @schemes http
 func main() {
 	cnf := utils.LoadAppConfigFromEnv()
-	notifyerRepo, err := repos.NewPgNotifyerRepo(cnf)
+	pgDb, err := repos.NewDb(cnf)
+	if err != nil {
+		log.Fatalf("can`t open db connection=%s", err.Error())
+	}
+	notifyerRepo, err := repos.NewPgNotifyerRepo(pgDb)
 	if err != nil {
 		log.Fatalf("can`t create notifyer repo=%s", err.Error())
 	}
-	notifyerController := controllers.NewNotifyerController(notifyerRepo)
+	shceduler := services.NewSchedulerService(notifyerRepo, cnf)
+	notifyerController := controllers.NewNotifyerController(notifyerRepo, shceduler)
 	router := gin.Default()
 	apiGroup := router.Group("/api")
 	routes.AddNotifyerRoutes(apiGroup, notifyerController)

@@ -8,16 +8,19 @@ import (
 
 type Message struct {
 	gorm.Model
-	SendingTime time.Time
-	ClientId    *uint
-	Client      *Client
-	MailingId   *uint
-	Mailing     *Mailing
+	SendingTime        time.Time
+	ConnectionTime     time.Duration
+	ConnectionIdleTime time.Duration
+	SendingStatus      SendingStatus
+	ClientId           *uint
+	Client             *Client
+	MailingId          *uint
+	Mailing            *Mailing
 }
 
 type SendingStatus string
 
 const (
-	CREATED SendingStatus = "CREATED"
-	SENT    SendingStatus = "SENT"
+	SENT     SendingStatus = "SENT"
+	REJECTED SendingStatus = "REJECTED"
 )

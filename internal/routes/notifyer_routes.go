@@ -19,7 +19,6 @@ func AddNotifyerRoutes(rg *gin.RouterGroup, c *controllers.NotifyerController) {
 		mailing.DELETE("/:id", DeleteMailing(c))
 		mailing.GET("/dashboard", MailingsDashboard(c))
 		mailing.GET("/:id/statistics", MailingStatistics(c))
-		mailing.PUT("/:id/message", NewMailingMessage(c))
 	}
 }
 
@@ -121,8 +120,4 @@ func MailingsDashboard(c *controllers.NotifyerController) func(*gin.Context) {
 
 func MailingStatistics(c *controllers.NotifyerController) func(*gin.Context) {
 	return c.MailingStatistics
-}
-
-func NewMailingMessage(c *controllers.NotifyerController) func(*gin.Context) {
-	return c.NewMailingMessage
 }
