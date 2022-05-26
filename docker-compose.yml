@@ -3,11 +3,16 @@ services:
     image: postgres
     restart: always
     environment:
+      - POSTGRES_DB=notifyer
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
     ports:
       - '${DB_PORT}:5432'
+    networks:
+      - backend
   notifyer:
+    depends_on:
+      - db
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -17,3 +22,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+    networks:
+      - backend
+networks:
+  backend:

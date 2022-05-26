@@ -1,22 +1,235 @@
 basePath: /api
+definitions:
+  rest.Client:
+    properties:
+      id:
+        type: integer
+      mobile_operator_code:
+        maxLength: 3
+        minLength: 3
+        type: string
+      phone_number:
+        maxLength: 11
+        minLength: 11
+        type: string
+      tag:
+        type: string
+      timezone:
+        type: string
+    required:
+    - mobile_operator_code
+    - phone_number
+    - timezone
+    type: object
+  rest.Mailing:
+    properties:
+      end_time:
+        type: string
+      filter_value:
+        type: string
+      id:
+        type: integer
+      sending_filter:
+        enum:
+        - BY_TAG
+        - BY_OPERATOR
+        type: string
+      starting_time:
+        type: string
+      text:
+        type: string
+    required:
+    - end_time
+    - filter_value
+    - sending_filter
+    - starting_time
+    - text
+    type: object
+  rest.NewClientResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  rest.NewMailingResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  rest.Result:
+    properties:
+      msg:
+        type: string
+    type: object
 host: localhost:2000
 info:
   contact: {}
   title: Notify service api
   version: "0.1"
 paths:
-  /test:
-    get:
-      description: test description
+  /client:
+    post:
+      consumes:
+      - application/json
+      description: creating client
+      parameters:
+      - description: client
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/rest.Client'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: test summary
+            $ref: '#/definitions/rest.NewClientResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: create client
+    put:
+      consumes:
+      - application/json
+      description: updates client by id
+      parameters:
+      - description: client
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/rest.Client'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: update client
+  /client/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: deletes client by id
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.Client'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: delete client
+  /mailing:
+    post:
+      consumes:
+      - application/json
+      description: creates mailing
+      parameters:
+      - description: mailing
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/rest.Mailing'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.NewMailingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: create mailing
+    put:
+      consumes:
+      - application/json
+      description: updates mailing by id
+      parameters:
+      - description: mailing
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/rest.Mailing'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: update mailing
+  /mailing/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: deletes mailing by id
+      parameters:
+      - description: mailing id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rest.Mailing'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: delete mailing
 schemes:
 - http
 swagger: "2.0"

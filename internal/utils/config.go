@@ -6,16 +6,18 @@ import (
 )
 
 type AppConfig struct {
-	DbUser      string
-	DbPassword  string
-	DbPort      string
+	DbUser     string
+	DbPassword string
+	DbHost     string
+	DbPort     string
 }
 
 func LoadAppConfigFromEnv() *AppConfig {
 	return &AppConfig{
-		DbUser:      loadEnvByKey("DB_USER"),
-		DbPassword:  loadEnvByKey("DB_PASS"),
-		DbPort:      loadEnvByKey("DB_PORT"),
+		DbUser:     loadEnvByKey("DB_USER"),
+		DbPassword: loadEnvByKey("DB_PASS"),
+		DbPort:     loadEnvByKey("DB_PORT"),
+		DbHost:     loadEnvByKey("DB_HOST"),
 	}
 }
 

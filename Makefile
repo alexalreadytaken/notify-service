@@ -4,7 +4,11 @@ help:
 db:
 	docker-compose up -d db
 
-full:
+ up-rebuild:
+	docker-compose build --force-rm --no-cache notifyer
+	docker-compose up -d
+
+upall:
 	docker-compose up -d
 
 stopall:
@@ -18,5 +22,8 @@ swag-gen:
 
 include .env
 export
+notifyer:
+	go run cmd/main.go
+
 test:	
 	go test ./...

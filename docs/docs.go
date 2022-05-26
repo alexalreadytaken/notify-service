@@ -16,21 +16,342 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/test": {
-            "get": {
-                "description": "test description",
+        "/client": {
+            "put": {
+                "description": "updates client by id",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "test summary",
+                "summary": "update client",
+                "parameters": [
+                    {
+                        "description": "client",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.Client"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
                         }
                     }
+                }
+            },
+            "post": {
+                "description": "creating client",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "create client",
+                "parameters": [
+                    {
+                        "description": "client",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.Client"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.NewClientResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/client/{id}": {
+            "delete": {
+                "description": "deletes client by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "delete client",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "client id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Client"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/mailing": {
+            "put": {
+                "description": "updates mailing by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "update mailing",
+                "parameters": [
+                    {
+                        "description": "mailing",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.Mailing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "creates mailing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "create mailing",
+                "parameters": [
+                    {
+                        "description": "mailing",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.Mailing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.NewMailingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/mailing/{id}": {
+            "delete": {
+                "description": "deletes mailing by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "delete mailing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "mailing id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Mailing"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "rest.Client": {
+            "type": "object",
+            "required": [
+                "mobile_operator_code",
+                "phone_number",
+                "timezone"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "mobile_operator_code": {
+                    "type": "string",
+                    "maxLength": 3,
+                    "minLength": 3
+                },
+                "phone_number": {
+                    "type": "string",
+                    "maxLength": 11,
+                    "minLength": 11
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.Mailing": {
+            "type": "object",
+            "required": [
+                "end_time",
+                "filter_value",
+                "sending_filter",
+                "starting_time",
+                "text"
+            ],
+            "properties": {
+                "end_time": {
+                    "type": "string"
+                },
+                "filter_value": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sending_filter": {
+                    "type": "string",
+                    "enum": [
+                        "BY_TAG",
+                        "BY_OPERATOR"
+                    ]
+                },
+                "starting_time": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.NewClientResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rest.NewMailingResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rest.Result": {
+            "type": "object",
+            "properties": {
+                "msg": {
+                    "type": "string"
                 }
             }
         }
