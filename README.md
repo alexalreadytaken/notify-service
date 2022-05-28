@@ -2,7 +2,7 @@
 
 
 ## requirements
-- go 1.18 (maybe work on 1.17?)
+- go 1.18
 - gnu make
 - docker\compose
 - go swaggo?

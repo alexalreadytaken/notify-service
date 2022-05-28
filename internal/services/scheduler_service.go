@@ -40,11 +40,10 @@ func (service *SchedulerService) execute(mailingId uint) {
 	service.sendMessagesAndCollectStatistics(mailing)
 }
 
-// пользователь может бесконечно отодвигать начало рассылки
+// пользователь может бесконечно отодвигать начало рассылки?
 func (service *SchedulerService) scheduleAndGetMailing(mailingId uint) *db.Mailing {
-	var mailing *db.Mailing
 	for {
-		mailing, _ = service.notifyerRepo.FindMailingById(mailingId)
+		mailing, _ := service.notifyerRepo.FindMailingById(mailingId)
 		if mailing == nil {
 			log.Printf("can`t find mailing by id = %d for start execition", mailingId)
 			return nil
@@ -56,10 +55,9 @@ func (service *SchedulerService) scheduleAndGetMailing(mailingId uint) *db.Maili
 			log.Printf("mailing by id = %d has been edited in the past or ended", mailingId)
 			return nil
 		} else {
-			break
+			return mailing
 		}
 	}
-	return mailing
 }
 
 func (service *SchedulerService) sendMessagesAndCollectStatistics(mailing *db.Mailing) {

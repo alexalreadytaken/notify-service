@@ -29,8 +29,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("can`t create notifyer repo=%s", err.Error())
 	}
-	shceduler := services.NewSchedulerService(notifyerRepo, cnf)
-	notifyerController := controllers.NewNotifyerController(notifyerRepo, shceduler)
+	scheduler := services.NewSchedulerService(notifyerRepo, cnf)
+	notifyerController := controllers.NewNotifyerController(notifyerRepo, scheduler)
 	router := gin.Default()
 	apiGroup := router.Group("/api")
 	controllers.AddNotifyerRoutes(apiGroup, notifyerController)
