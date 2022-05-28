@@ -9,7 +9,6 @@ import (
 	_ "gitlab.com/alexalreadytaken/notify-service/docs"
 	"gitlab.com/alexalreadytaken/notify-service/internal/controllers"
 	"gitlab.com/alexalreadytaken/notify-service/internal/repos"
-	"gitlab.com/alexalreadytaken/notify-service/internal/routes"
 	"gitlab.com/alexalreadytaken/notify-service/internal/services"
 	"gitlab.com/alexalreadytaken/notify-service/internal/utils"
 )
@@ -34,7 +33,7 @@ func main() {
 	notifyerController := controllers.NewNotifyerController(notifyerRepo, shceduler)
 	router := gin.Default()
 	apiGroup := router.Group("/api")
-	routes.AddNotifyerRoutes(apiGroup, notifyerController)
+	controllers.AddNotifyerRoutes(apiGroup, notifyerController)
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":2000")
 }

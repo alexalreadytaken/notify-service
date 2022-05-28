@@ -1,4 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
 # GNU Make 4.3
 # Built for x86_64-redhat-linux-gnu
 # Copyright (C) 1988-2020 Free Software Foundation, Inc.
@@ -6,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu May 26 19:24:25 2022
+# Make data base, printed on Sat May 28 12:23:50 2022
 
 # Variables
 
@@ -16,10 +18,12 @@ GDK_BACKEND = x11
 LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
+# makefile (from '.env', line 8)
+EXTERNAL_SENDER_ENDPOINT = https://probe.fbrq.cloud/v1/send
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-92d00511-65a9-4135-abe0-a595671e842b.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-644b0976-edbd-4154-a950-77b00898e211.sock
 # environment
 VSCODE_CWD = /home/alex
 # environment
@@ -70,8 +74,6 @@ XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.YU6DM1
 .LOADED := 
 # default
 .INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
-# makefile (from '.env', line 8)
-EXTERNAL_SENDER_ENDOPINT = probe.fbrq.cloud/send
 # makefile
 MAKEFLAGS = pqrR
 # makefile
@@ -221,7 +223,7 @@ HOME = /home/alex
 # environment
 QT_IM_MODULE = ibus
 # makefile (from '.env', line 7)
-EXTERNAL_SENDER_TOKEN = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUwMjcyMDYsImlzcyI6ImZhYnJpcXVlIiwibmFtZSI6IkBhbGV4YWxyZWFkeXRha2VuIn0.xmORCfCWAiKIqRsiZhGMLuHBfHI70RAm5XmRFCxwzAk
+EXTERNAL_SENDER_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODUwMjcyMDYsImlzcyI6ImZhYnJpcXVlIiwibmFtZSI6IkBhbGV4YWxyZWFkeXRha2VuIn0.xmORCfCWAiKIqRsiZhGMLuHBfHI70RAm5XmRFCxwzAk
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
@@ -249,9 +251,9 @@ GDMSESSION = gnome
 
 # Directories
 
-# . (device 40, inode 1577783): 14 files, no impossibilities.
+# . (device 40, inode 1577783): 15 files, no impossibilities.
 
-# 14 files, no impossibilities in 1 directories.
+# 15 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -262,14 +264,14 @@ GDMSESSION = gnome
 # Not a target:
 .env:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-26 19:10:06.733102642
+#  Last modified 2022-05-26 20:07:04.017681266
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-26 12:10:41.29886281
+#  Last modified 2022-05-26 22:16:17.812444608
 #  File has been updated.
 #  Successfully updated.
 
@@ -277,31 +279,29 @@ logs:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 18):
+#  recipe to execute (from 'Makefile', line 40):
 	docker-compose logs
-
- 
-make: *** No rule to make target 'all'.  Stop.
 
 swag-gen:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 21):
+#  recipe to execute (from 'Makefile', line 43):
 	swag init -g cmd/main.go
 
+ 
 upall:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 12):
+#  recipe to execute (from 'Makefile', line 34):
 	docker-compose up -d
 
 stopall:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 15):
+#  recipe to execute (from 'Makefile', line 37):
 	docker-compose stop
 
 # Not a target:
@@ -322,51 +322,66 @@ help:
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 2):
-	$(info TODO)
-
-test:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 29):
-	go test ./...
+	$(info commands:)
+	$(info )
+	$(info -make db = запускает контейнер пг в фоне)
+	$(info )
+	$(info )
+	$(info -make up-rebuild = ребилдит контейнер с бэком)
+	$(info )
+	$(info )
+	$(info -make upall = поднять все контейнеры в фоне)
+	$(info )
+	$(info )
+	$(info -make stopall = остановить все контейнеры)
+	$(info )
+	$(info )
+	$(info -make logs = выводит логи контейнеров)
+	$(info )
+	$(info )
+	$(info -make swag-gen = обновляет спецификацию swagger)
+	$(info )
+	$(info )
+	$(info -make notifyer = запускает бэк без контейнера)
+	$(info )
+	
 
 db:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 5):
+#  recipe to execute (from 'Makefile', line 27):
 	docker-compose up -d db
 
 notifyer:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 26):
+#  recipe to execute (from 'Makefile', line 48):
 	go run cmd/main.go
 
 up-rebuild:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 8):
+#  recipe to execute (from 'Makefile', line 30):
 	docker-compose build --force-rm --no-cache notifyer
 	docker-compose up -d
 
 # files hash-table stats:
-# Load=14/1024=1%, Rehash=0, Collisions=0/25=0%
+# Load=13/1024=1%, Rehash=0, Collisions=0/24=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 28 / storage = 220 B / avg = 7 B
-# current buf: size = 8162 B / used = 220 B / count = 28 / avg = 7 B
+# strcache buffers: 1 (0) / strings = 28 / storage = 227 B / avg = 8 B
+# current buf: size = 8162 B / used = 227 B / count = 28 / avg = 8 B
 
-# strcache performance: lookups = 43 / hit rate = 34%
+# strcache performance: lookups = 42 / hit rate = 33%
 # hash-table stats:
-# Load=28/8192=0%, Rehash=0, Collisions=0/43=0%
-# Finished Make data base on Thu May 26 19:24:25 2022
+# Load=28/8192=0%, Rehash=0, Collisions=0/42=0%
+# Finished Make data base on Sat May 28 12:23:50 2022
 
  

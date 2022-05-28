@@ -33,36 +33,50 @@ func (service *SchedulerService) ScheduleOrSend(mailingId uint) {
 }
 
 func (service *SchedulerService) execute(mailingId uint) {
-	mailing := service.notifyerRepo.FindMailingById(mailingId)
+	mailing := service.scheduleAndGetMailing(mailingId)
 	if mailing == nil {
-		log.Printf("can`t find mailing by id = %d for start execition", mailingId)
 		return
 	}
-	now := time.Now()
-	if mailing.StartingTime.Before(now) && mailing.EndingTime.After(now) {
-		go service.sendMessagesAndCollectStatistics(mailing)
-		return
-	}
-	go func() {
-		time.Sleep(mailing.StartingTime.Sub(now))
-		mailing := service.notifyerRepo.FindMailingById(mailingId)
+	service.sendMessagesAndCollectStatistics(mailing)
+}
+
+// пользователь может бесконечно отодвигать начало рассылки
+func (service *SchedulerService) scheduleAndGetMailing(mailingId uint) *db.Mailing {
+	var mailing *db.Mailing
+	for {
+		mailing, _ = service.notifyerRepo.FindMailingById(mailingId)
 		if mailing == nil {
 			log.Printf("can`t find mailing by id = %d for start execition", mailingId)
-			return
+			return nil
 		}
-		service.sendMessagesAndCollectStatistics(mailing)
-	}()
+		now := time.Now()
+		if mailing.StartingTime.After(now) {
+			time.Sleep(mailing.StartingTime.Sub(now))
+		} else if mailing.EndingTime.Before(now) {
+			log.Printf("mailing by id = %d has been edited in the past or ended", mailingId)
+			return nil
+		} else {
+			break
+		}
+	}
+	return mailing
 }
 
 func (service *SchedulerService) sendMessagesAndCollectStatistics(mailing *db.Mailing) {
 	var clients []db.Client
+	var err error
 	switch mailing.SendindFilter {
 	case db.BY_OPERATOR:
-		clients = service.notifyerRepo.FindClientsByOperator(mailing.FilterValue)
+		clients, err = service.notifyerRepo.FindClientsByOperator(mailing.FilterValue)
 	case db.BY_TAG:
-		clients = service.notifyerRepo.FindClientsByTag(mailing.FilterValue)
+		clients, err = service.notifyerRepo.FindClientsByTag(mailing.FilterValue)
 	default:
 		log.Println("unexpected mailing filter found=", mailing.SendindFilter)
+		return
+	}
+	if err != nil {
+		log.Printf("can`t get clients with filter %s = %s",
+			mailing.SendindFilter, mailing.FilterValue)
 		return
 	}
 	for i := 0; i < len(clients); i++ {

@@ -21,6 +21,7 @@ help:
 	$(info )
 	$(info -make notifyer = запускает бэк без контейнера)
 	$(info )
+	$(info -make test = запускает тесты бэка)	
 	
 
 db:
@@ -46,3 +47,6 @@ include .env
 export
 notifyer:
 	go run cmd/main.go
+
+test:
+	go test ./...

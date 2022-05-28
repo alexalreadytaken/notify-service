@@ -1,1 +1,1 @@
-{"buildTargets":["db","help","logs","make","notifyer","stopall","swag-gen","test","up-rebuild","upall"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
+{"buildTargets":["db","help","logs","notifyer","stopall","swag-gen","up-rebuild","upall"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}

@@ -41,7 +41,16 @@ func (c *NotifyerController) NewClient(g *gin.Context) {
 		return
 	}
 	g.JSON(http.StatusOK, rest.NewClientResponse{ID: id})
+}
 
+func (c *NotifyerController) AllClients(g *gin.Context) {
+	clients, err := c.repo.GetAllClients()
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
+	g.JSON(http.StatusOK, dbClientsToRest(clients))
 }
 
 func (c *NotifyerController) UpdateClient(g *gin.Context) {
@@ -115,6 +124,16 @@ func (c *NotifyerController) NewMailing(g *gin.Context) {
 	g.JSON(http.StatusOK, rest.NewMailingResponse{ID: mailingId})
 }
 
+func (c *NotifyerController) AllMailings(g *gin.Context) {
+	mailings, err := c.repo.GetAllMailings()
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
+	g.JSON(http.StatusOK, dbMailingsToRest(mailings))
+}
+
 func (c *NotifyerController) UpdateMailing(g *gin.Context) {
 	mailing := bindMailing(g)
 	if g.IsAborted() {
@@ -172,19 +191,30 @@ func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 
 //kill me
 func (c *NotifyerController) MailingsDashboard(g *gin.Context) {
-	mailings := c.repo.GetAllMailings()
+	mailings, err := c.repo.GetAllMailings()
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
 	var dashboard []rest.MailingCountsByStatus
 	for i := 0; i < len(mailings); i++ {
 		mailing := mailings[i]
+		rejectedCount, err := c.repo.CountMailingMessagesByStatus(mailing.ID, db.REJECTED)
+		if err != nil {
+			g.AbortWithStatusJSON(http.StatusInternalServerError,
+				rest.Result{Msg: err.Error()})
+			return
+		}
+		sentCount, err := c.repo.CountMailingMessagesByStatus(mailing.ID, db.SENT)
+		if err != nil {
+			g.AbortWithStatusJSON(http.StatusInternalServerError,
+				rest.Result{Msg: err.Error()})
+			return
+		}
 		var counts []rest.CountMessagesByStatus
-		rejected := rest.CountMessagesByStatus{
-			Status: "REJECTED",
-			Count:  uint(c.repo.CountMailingMessagesByStatus(mailing.ID, db.REJECTED)),
-		}
-		sent := rest.CountMessagesByStatus{
-			Status: "SENT",
-			Count:  uint(c.repo.CountMailingMessagesByStatus(mailing.ID, db.SENT)),
-		}
+		rejected := rest.CountMessagesByStatus{Status: "REJECTED", Count: uint(rejectedCount)}
+		sent := rest.CountMessagesByStatus{Status: "SENT", Count: uint(sentCount)}
 		counts = append(counts, rejected, sent)
 		dashboard = append(dashboard, rest.MailingCountsByStatus{
 			Mailing: dbMailingToRest(&mailing),
@@ -216,7 +246,12 @@ func (c *NotifyerController) MailingStatistics(g *gin.Context) {
 			rest.Result{Msg: "mailing not found"})
 		return
 	}
-	mailing := c.repo.FindMailingById(uint(malingId))
+	mailing, err := c.repo.FindMailingById(uint(malingId))
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
 	messages, err := c.repo.GetMailingMessages(uint(malingId))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,

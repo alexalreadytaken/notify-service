@@ -19,6 +19,7 @@ definitions:
     required:
     - mobile_operator_code
     - phone_number
+    - tag
     - timezone
     type: object
   rest.CountMessagesByStatus:
@@ -115,7 +116,7 @@ info:
   title: Notify service api
   version: "0.1"
 paths:
-  /client:
+  /client/:
     post:
       consumes:
       - application/json
@@ -197,7 +198,30 @@ paths:
           schema:
             $ref: '#/definitions/rest.Result'
       summary: delete client
-  /mailing:
+  /clients:
+    get:
+      consumes:
+      - application/json
+      description: return all clients
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/rest.Client'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: all clients
+  /mailing/:
     post:
       consumes:
       - application/json
@@ -325,6 +349,29 @@ paths:
           schema:
             $ref: '#/definitions/rest.Result'
       summary: all mailings dashboard
+  /mailings:
+    get:
+      consumes:
+      - application/json
+      description: return all mailings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/rest.Mailing'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest.Result'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest.Result'
+      summary: all mailings
 schemes:
 - http
 swagger: "2.0"

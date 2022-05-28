@@ -62,9 +62,25 @@ func dbMessageToRest(m *db.Message) rest.Message {
 }
 
 func dbMessagesToRest(msgs []db.Message) []rest.Message {
-	var restMessages []rest.Message
+	restMessages := make([]rest.Message, len(msgs))
 	for i := 0; i < len(msgs); i++ {
-		restMessages = append(restMessages, dbMessageToRest(&msgs[i]))
+		restMessages[i] = dbMessageToRest(&msgs[i])
 	}
 	return restMessages
+}
+
+func dbClientsToRest(clients []db.Client) []rest.Client {
+	restClients := make([]rest.Client, len(clients))
+	for i := 0; i < len(clients); i++ {
+		restClients[i] = dbClientToRest(&clients[i])
+	}
+	return restClients
+}
+
+func dbMailingsToRest(mailings []db.Mailing) []rest.Mailing {
+	restMailings := make([]rest.Mailing, len(mailings))
+	for i := 0; i < len(mailings); i++ {
+		restMailings[i] = dbMailingToRest(&mailings[i])
+	}
+	return restMailings
 }

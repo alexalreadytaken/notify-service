@@ -1,17 +1,18 @@
-package routes
+package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/alexalreadytaken/notify-service/internal/controllers"
 )
 
-func AddNotifyerRoutes(rg *gin.RouterGroup, c *controllers.NotifyerController) {
+func AddNotifyerRoutes(rg *gin.RouterGroup, c *NotifyerController) {
+	rg.GET("/clients", AllClients(c))
 	client := rg.Group("/client")
 	{
 		client.POST("/", NewClient(c))
 		client.PUT("/", UpdateClient(c))
 		client.DELETE("/:id", DeleteClient(c))
 	}
+	rg.GET("/mailings", AllMailings(c))
 	mailing := rg.Group("/mailing")
 	{
 		mailing.POST("/", NewMailing(c))
@@ -34,9 +35,23 @@ func AddNotifyerRoutes(rg *gin.RouterGroup, c *controllers.NotifyerController) {
 // @Success 200 {object} rest.NewClientResponse
 // @Failure 400 {object} rest.Result
 // @Failure 500 {object} rest.Result
-// @Router /client [post]
-func NewClient(c *controllers.NotifyerController) func(*gin.Context) {
+// @Router /client/ [post]
+func NewClient(c *NotifyerController) func(*gin.Context) {
 	return c.NewClient
+}
+
+// Notifyer godoc
+// @Summary all clients
+// @Description return all clients
+// @Schemes
+// @Accept json
+// @Produce json
+// @Success 200 {object} []rest.Client
+// @Failure 400 {object} rest.Result
+// @Failure 500 {object} rest.Result
+// @Router /clients [get]
+func AllClients(c *NotifyerController) func(*gin.Context) {
+	return c.AllClients
 }
 
 // Notifyer godoc
@@ -49,8 +64,8 @@ func NewClient(c *controllers.NotifyerController) func(*gin.Context) {
 // @Success 200 {object} rest.Result
 // @Failure 400 {object} rest.Result
 // @Failure 500 {object} rest.Result
-// @Router /client [put]
-func UpdateClient(c *controllers.NotifyerController) func(*gin.Context) {
+// @Router /client/ [put]
+func UpdateClient(c *NotifyerController) func(*gin.Context) {
 	return c.UpdateClient
 }
 
@@ -65,7 +80,7 @@ func UpdateClient(c *controllers.NotifyerController) func(*gin.Context) {
 // @Failure 500 {object} rest.Result
 // @Param id path int true "client id"
 // @Router /client/{id} [delete]
-func DeleteClient(c *controllers.NotifyerController) func(*gin.Context) {
+func DeleteClient(c *NotifyerController) func(*gin.Context) {
 	return c.DeleteClient
 }
 
@@ -79,9 +94,23 @@ func DeleteClient(c *controllers.NotifyerController) func(*gin.Context) {
 // @Success 200 {object} rest.NewMailingResponse
 // @Failure 400 {object} rest.Result
 // @Failure 500 {object} rest.Result
-// @Router /mailing [post]
-func NewMailing(c *controllers.NotifyerController) func(*gin.Context) {
+// @Router /mailing/ [post]
+func NewMailing(c *NotifyerController) func(*gin.Context) {
 	return c.NewMailing
+}
+
+// Notifyer godoc
+// @Summary all mailings
+// @Description return all mailings
+// @Schemes
+// @Accept json
+// @Produce json
+// @Success 200 {object} []rest.Mailing
+// @Failure 400 {object} rest.Result
+// @Failure 500 {object} rest.Result
+// @Router /mailings [get]
+func AllMailings(c *NotifyerController) func(*gin.Context) {
+	return c.AllMailings
 }
 
 // Notifyer godoc
@@ -94,8 +123,8 @@ func NewMailing(c *controllers.NotifyerController) func(*gin.Context) {
 // @Success 200 {object} rest.Result
 // @Failure 400 {object} rest.Result
 // @Failure 500 {object} rest.Result
-// @Router /mailing [put]
-func UpdateMailing(c *controllers.NotifyerController) func(*gin.Context) {
+// @Router /mailing/ [put]
+func UpdateMailing(c *NotifyerController) func(*gin.Context) {
 	return c.UpdateMailing
 }
 
@@ -110,7 +139,7 @@ func UpdateMailing(c *controllers.NotifyerController) func(*gin.Context) {
 // @Failure 500 {object} rest.Result
 // @Param id path int true "mailing id"
 // @Router /mailing/{id} [delete]
-func DeleteMailing(c *controllers.NotifyerController) func(*gin.Context) {
+func DeleteMailing(c *NotifyerController) func(*gin.Context) {
 	return c.DeleteMailing
 }
 
@@ -123,7 +152,7 @@ func DeleteMailing(c *controllers.NotifyerController) func(*gin.Context) {
 // @Failure 400 {object} rest.Result
 // @Failure 500 {object} rest.Result
 // @Router /mailing/dashboard [get]
-func MailingsDashboard(c *controllers.NotifyerController) func(*gin.Context) {
+func MailingsDashboard(c *NotifyerController) func(*gin.Context) {
 	return c.MailingsDashboard
 }
 
@@ -137,6 +166,6 @@ func MailingsDashboard(c *controllers.NotifyerController) func(*gin.Context) {
 // @Failure 500 {object} rest.Result
 // @Param id path int true "mailing id"
 // @Router /mailing/{id}/statistics [get]
-func MailingStatistics(c *controllers.NotifyerController) func(*gin.Context) {
+func MailingStatistics(c *NotifyerController) func(*gin.Context) {
 	return c.MailingStatistics
 }

@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/client": {
+        "/client/": {
             "put": {
                 "description": "updates client by id",
                 "consumes": [
@@ -141,7 +141,42 @@ const docTemplate = `{
                 }
             }
         },
-        "/mailing": {
+        "/clients": {
+            "get": {
+                "description": "return all clients",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "all clients",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/rest.Client"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/mailing/": {
             "put": {
                 "description": "updates mailing by id",
                 "consumes": [
@@ -336,6 +371,41 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/mailings": {
+            "get": {
+                "description": "return all mailings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "all mailings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/rest.Mailing"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.Result"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -344,6 +414,7 @@ const docTemplate = `{
             "required": [
                 "mobile_operator_code",
                 "phone_number",
+                "tag",
                 "timezone"
             ],
             "properties": {
