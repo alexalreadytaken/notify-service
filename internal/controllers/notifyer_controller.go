@@ -30,6 +30,7 @@ func NewNotifyerController(
 }
 
 func (c *NotifyerController) NewClient(g *gin.Context) {
+	log.Println("new create client request")
 	client := bindClient(g)
 	if g.IsAborted() {
 		return
@@ -40,10 +41,12 @@ func (c *NotifyerController) NewClient(g *gin.Context) {
 			rest.Result{Msg: err.Error()})
 		return
 	}
+	log.Printf("new client crated successfully, id = %d", id)
 	g.JSON(http.StatusOK, rest.NewClientResponse{ID: id})
 }
 
 func (c *NotifyerController) AllClients(g *gin.Context) {
+	log.Println("new request for all client")
 	clients, err := c.repo.GetAllClients()
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
@@ -54,18 +57,19 @@ func (c *NotifyerController) AllClients(g *gin.Context) {
 }
 
 func (c *NotifyerController) UpdateClient(g *gin.Context) {
+	log.Printf("new request for update client")
 	client := bindClient(g)
 	if g.IsAborted() {
 		return
 	}
 	exists, err := c.repo.ClientExists(client.ID)
 	if err != nil {
-		log.Println("error while getting info about client=", err)
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
-			rest.Result{Msg: "can`t get info about client"})
+			rest.Result{Msg: err.Error()})
 		return
 	}
 	if !exists {
+		log.Printf("client with id = %d not found", client.ID)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "client not found"})
 		return
@@ -76,12 +80,14 @@ func (c *NotifyerController) UpdateClient(g *gin.Context) {
 			rest.Result{Msg: err.Error()})
 		return
 	}
+	log.Printf("client with id = %d updated successfully", client.ID)
 	g.JSON(http.StatusOK, rest.Result{Msg: "ok"})
 
 }
 
 func (c *NotifyerController) DeleteClient(g *gin.Context) {
 	id := g.Param("id")
+	log.Printf("new request for deleting client with id = %s", id)
 	clientId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
@@ -90,12 +96,12 @@ func (c *NotifyerController) DeleteClient(g *gin.Context) {
 	}
 	exists, err := c.repo.ClientExists(uint(clientId))
 	if err != nil {
-		log.Println("error while getting info about client=", err)
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
-			rest.Result{Msg: "can`t get info about client"})
+			rest.Result{Msg: err.Error()})
 		return
 	}
 	if !exists {
+		log.Printf("client with id = %d not found", clientId)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "client not found"})
 		return
@@ -106,10 +112,12 @@ func (c *NotifyerController) DeleteClient(g *gin.Context) {
 			rest.Result{Msg: err.Error()})
 		return
 	}
+	log.Printf("client with id = %d deleted successfully", client.ID)
 	g.JSON(http.StatusOK, dbClientToRest(client))
 }
 
 func (c *NotifyerController) NewMailing(g *gin.Context) {
+	log.Println("new create mailng request")
 	mailing := bindMailing(g)
 	if g.IsAborted() {
 		return
@@ -121,10 +129,12 @@ func (c *NotifyerController) NewMailing(g *gin.Context) {
 		return
 	}
 	c.scheduler.ScheduleOrSend(mailingId)
+	log.Printf("maling with id = %d created successfully", mailingId)
 	g.JSON(http.StatusOK, rest.NewMailingResponse{ID: mailingId})
 }
 
 func (c *NotifyerController) AllMailings(g *gin.Context) {
+	log.Println("request for all mailings")
 	mailings, err := c.repo.GetAllMailings()
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
@@ -135,18 +145,19 @@ func (c *NotifyerController) AllMailings(g *gin.Context) {
 }
 
 func (c *NotifyerController) UpdateMailing(g *gin.Context) {
+	log.Println("new request for update mailing")
 	mailing := bindMailing(g)
 	if g.IsAborted() {
 		return
 	}
 	exists, err := c.repo.MailingExists(mailing.ID)
 	if err != nil {
-		log.Println("error while getting info about mailing=", err)
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
-			rest.Result{Msg: "can`t get info about mailing"})
+			rest.Result{Msg: err.Error()})
 		return
 	}
 	if !exists {
+		log.Printf("mailing with id = %d not found", mailing.ID)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "mailing not found"})
 		return
@@ -157,11 +168,13 @@ func (c *NotifyerController) UpdateMailing(g *gin.Context) {
 			rest.Result{Msg: err.Error()})
 		return
 	}
+	log.Printf("mailing with id = %d updated successfully", mailing.ID)
 	g.JSON(http.StatusOK, rest.Result{Msg: "ok"})
 }
 
 func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 	id := g.Param("id")
+	log.Printf("request for deleting mailign with id = %s", id)
 	mailingId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
@@ -170,12 +183,12 @@ func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 	}
 	exists, err := c.repo.MailingExists(uint(mailingId))
 	if err != nil {
-		log.Println("error while getting info about mailing=", err)
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
-			rest.Result{Msg: "can`t get info about mailing"})
+			rest.Result{Msg: err.Error()})
 		return
 	}
 	if !exists {
+		log.Printf("mailign with id = %d not found", mailingId)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "mailing not found"})
 		return
@@ -186,11 +199,13 @@ func (c *NotifyerController) DeleteMailing(g *gin.Context) {
 			rest.Result{Msg: err.Error()})
 		return
 	}
+	log.Printf("mailing with id = %d deleted successfully", mailingId)
 	g.JSON(http.StatusOK, dbMailingToRest(mailing))
 }
 
 //kill me
 func (c *NotifyerController) MailingsDashboard(g *gin.Context) {
+	log.Println("new request for all mailigns dashboard")
 	mailings, err := c.repo.GetAllMailings()
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
@@ -228,31 +243,32 @@ func (c *NotifyerController) MailingsDashboard(g *gin.Context) {
 
 func (c *NotifyerController) MailingStatistics(g *gin.Context) {
 	id := g.Param("id")
-	malingId, err := strconv.ParseUint(id, 10, 64)
+	log.Printf("new request for statistics for mailing by id = %s", id)
+	mailingId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusBadRequest,
 			rest.Result{Msg: "mailing id must be number"})
 		return
 	}
-	exists, err := c.repo.MailingExists(uint(malingId))
-	if err != nil {
-		log.Println("error while getting info about mailing=", err)
-		g.AbortWithStatusJSON(http.StatusInternalServerError,
-			rest.Result{Msg: "can`t get info about mailing"})
-		return
-	}
-	if !exists {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "mailing not found"})
-		return
-	}
-	mailing, err := c.repo.FindMailingById(uint(malingId))
+	exists, err := c.repo.MailingExists(uint(mailingId))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
 			rest.Result{Msg: err.Error()})
 		return
 	}
-	messages, err := c.repo.GetMailingMessages(uint(malingId))
+	if !exists {
+		log.Printf("mailing with id = %d not found", mailingId)
+		g.AbortWithStatusJSON(http.StatusBadRequest,
+			rest.Result{Msg: "mailing not found"})
+		return
+	}
+	mailing, err := c.repo.FindMailingById(uint(mailingId))
+	if err != nil {
+		g.AbortWithStatusJSON(http.StatusInternalServerError,
+			rest.Result{Msg: err.Error()})
+		return
+	}
+	messages, err := c.repo.GetMailingMessages(uint(mailingId))
 	if err != nil {
 		g.AbortWithStatusJSON(http.StatusInternalServerError,
 			rest.Result{Msg: err.Error()})
@@ -267,30 +283,36 @@ func (c *NotifyerController) MailingStatistics(g *gin.Context) {
 
 func bindClient(g *gin.Context) *rest.Client {
 	client := rest.Client{}
+	prefix := "error while binding client ="
 	if err := g.Bind(&client); err != nil {
+		msg := "invalid client format=" + err.Error()
+		log.Println(prefix, msg)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "invalid client format=" + err.Error()})
+			rest.Result{Msg: msg})
 		return nil
 	}
 	if !utils.IsDigit(client.PhoneNumber) {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "phone number must be a digit"})
+		msg := "phone number must be a digit"
+		log.Println(prefix, msg)
+		g.AbortWithStatusJSON(http.StatusBadRequest, rest.Result{Msg: msg})
 		return nil
 	}
 	if strings.Split(client.PhoneNumber, "")[0] != "7" {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "phone number must starts at 7"})
+		msg := "phone number must starts at 7"
+		log.Println(prefix, msg)
+		g.AbortWithStatusJSON(http.StatusBadRequest, rest.Result{Msg: msg})
 		return nil
 	}
 	if !utils.IsDigit(client.MobileOperatorCode) {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "mobile operator code must be a digit"})
+		msg := "mobile operator code must be a digit"
+		log.Println(prefix, msg)
+		g.AbortWithStatusJSON(http.StatusBadRequest, rest.Result{Msg: msg})
 		return nil
 	}
 	_, err := time.LoadLocation(client.Timezone)
 	if err != nil {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: err.Error()})
+		log.Println(prefix, err.Error())
+		g.AbortWithStatusJSON(http.StatusBadRequest, rest.Result{Msg: err.Error()})
 		return nil
 	}
 	return &client
@@ -298,14 +320,18 @@ func bindClient(g *gin.Context) *rest.Client {
 
 func bindMailing(g *gin.Context) *rest.Mailing {
 	mailing := rest.Mailing{}
+	prefix := "error while binding mailing"
 	if err := g.Bind(&mailing); err != nil {
-		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "invalid mailing format=" + err.Error()})
+		msg := "invalid mailing format=" + err.Error()
+		log.Println(prefix, msg)
+		g.AbortWithStatusJSON(http.StatusBadRequest, rest.Result{Msg: msg})
 		return nil
 	}
 	if mailing.EndingTime.Before(mailing.StartingTime) {
+		msg := "mailing end time smaller starting time"
+		log.Println(prefix, msg)
 		g.AbortWithStatusJSON(http.StatusBadRequest,
-			rest.Result{Msg: "mailing end time smaller starting time"})
+			rest.Result{Msg: msg})
 		return nil
 	}
 	return &mailing

@@ -3,26 +3,20 @@ help:
 	$(info )
 	$(info -make db = запускает контейнер пг в фоне)
 	$(info )
-	$(info )
 	$(info -make up-rebuild = ребилдит контейнер с бэком)
-	$(info )
 	$(info )
 	$(info -make upall = поднять все контейнеры в фоне)
 	$(info )
-	$(info )
 	$(info -make stopall = остановить все контейнеры)
-	$(info )
 	$(info )
 	$(info -make logs = выводит логи контейнеров)
 	$(info )
-	$(info )
 	$(info -make swag-gen = обновляет спецификацию swagger)
-	$(info )
 	$(info )
 	$(info -make notifyer = запускает бэк без контейнера)
 	$(info )
 	$(info -make test = запускает тесты бэка)	
-	
+	$(info )
 
 db:
 	docker-compose up -d db

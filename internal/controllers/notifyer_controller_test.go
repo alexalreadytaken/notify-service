@@ -52,9 +52,16 @@ func (s *NotifyerControllerTestSuite) TestPositiveClientCreating() {
 
 func (s *NotifyerControllerTestSuite) TestCreateClientInvalidPhoneNumber() {
 	client := newValidClient()
-	client.PhoneNumber = "xxx"
+	client.PhoneNumber = "xxxxxxxxxxx"
 	resp := s.newClientRequest(client)
 	s.Equal(400, resp.Code)
+	res := s.restResultToStrust(resp)
+	s.Equal("phone number must be a digit", res.Msg)
+	client.PhoneNumber = "11111111111"
+	resp = s.newClientRequest(client)
+	s.Equal(400, resp.Code)
+	res = s.restResultToStrust(resp)
+	s.Equal("phone number must starts at 7", res.Msg)
 }
 
 func (s *NotifyerControllerTestSuite) TestCreateClientInvalidOperatorCode() {
@@ -62,6 +69,8 @@ func (s *NotifyerControllerTestSuite) TestCreateClientInvalidOperatorCode() {
 	client.MobileOperatorCode = "amoma"
 	resp := s.newClientRequest(client)
 	s.Equal(400, resp.Code)
+	res := s.restResultToStrust(resp)
+	s.Equal("mobile operator code must be a digit", res)
 }
 
 func (s *NotifyerControllerTestSuite) TestCreateClientInvalidTimezone() {
@@ -71,7 +80,8 @@ func (s *NotifyerControllerTestSuite) TestCreateClientInvalidTimezone() {
 	s.Equal(400, resp.Code)
 }
 
-func (s *NotifyerControllerTestSuite) newClientRequest(client *rest.Client) *httptest.ResponseRecorder {
+func (s *NotifyerControllerTestSuite) newClientRequest(
+	client *rest.Client) *httptest.ResponseRecorder {
 	resp := httptest.NewRecorder()
 	body, err := bodyToReader(client)
 	s.NoError(err, "error while creating client")
@@ -81,6 +91,14 @@ func (s *NotifyerControllerTestSuite) newClientRequest(client *rest.Client) *htt
 	s.NoError(err, "error while creating client request")
 	s.gin.ServeHTTP(resp, req)
 	return resp
+}
+
+func (s *NotifyerControllerTestSuite) restResultToStrust(
+	resp *httptest.ResponseRecorder) *rest.Result {
+	var res rest.Result
+	err := json.Unmarshal(resp.Body.Bytes(), &res)
+	s.NoError(err)
+	return &res
 }
 
 func newValidClient() *rest.Client {
